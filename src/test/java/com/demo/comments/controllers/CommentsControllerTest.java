@@ -55,8 +55,8 @@ public class CommentsControllerTest {
 	Comments addcomments = new Comments("","comment comment", "Anupama", System.currentTimeMillis(), true,
 			false, "anupama@gmail.com");
 
-	String exampleCommentsJson = "[{\"submissionId\":\"submissionId\",\"commentText\":\"comment comment\",\"personName\":\"Anupama\",\"like\":true,\"dislike\":false,\"emailId\":\"anupama@gmail.com\"}]";
-	String exampleCommentsJsonSave = "[{\"submissionId\":\"submissionId\",\"commentText\":\"comment for Devaraj\",\"personName\":\"Devaraj\",\"like\":true,\"dislike\":false,\"emailId\":\"devaraj@gmail.com\"}]";
+	String exampleCommentsJson = "[{\"commentId\":\"commentId\",\"commentText\":\"comment comment\",\"personName\":\"Anupama\",\"like\":true,\"dislike\":false,\"emailId\":\"anupama@gmail.com\"}]";
+	String exampleCommentsJsonSave = "[{\"commentId\":\"commentId\",\"commentText\":\"comment for Devaraj\",\"personName\":\"Devaraj\",\"like\":true,\"dislike\":false,\"emailId\":\"devaraj@gmail.com\"}]";
 
 	@Test
 	@Ignore
@@ -73,7 +73,7 @@ public class CommentsControllerTest {
 		  mockMvc.perform(get("/comments/")).andExpect(status().isOk())
 		  .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andDo(
 		  print()) .andExpect(jsonPath("$[0].commentText", is("comment comment ")))
-		  .andExpect(jsonPath("$[0].personName", is("Anupama")))
+		  .andExpect(jsonPath("$[0].commentBy", is("Anupama")))
 		  .andExpect(jsonPath("$[0].emailId", is("anupama@gmail.com")));
 		 */
 	}
@@ -85,7 +85,7 @@ public class CommentsControllerTest {
 		comment.setCommentText("comment for Devaraj");
 		comment.setDislike(false);
 		comment.setLike(true);
-		comment.setPersonName("Devaraj");
+		comment.setCommentBy("Devaraj");
 		comment.setEmailId("devaraj@gmail.com");
 		
 		RequestBuilder requestBuilder = MockMvcRequestBuilders

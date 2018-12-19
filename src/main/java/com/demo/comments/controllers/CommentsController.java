@@ -46,9 +46,9 @@ public class CommentsController {
 
 	// To delete a comment given submission Id
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public void deleteComment(@PathVariable("id") String submissionId) {
-		System.out.println(submissionId);
-		commentsService.deleteComment(submissionId);
+	public void deleteComment(@PathVariable("id") String commentId) {
+		System.out.println(commentId);
+		commentsService.deleteComment(commentId);
 	}
 
 }

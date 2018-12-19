@@ -11,10 +11,10 @@ import com.demo.comments.models.Comments;
 public interface CommentsRepository extends MongoRepository<Comments, String> {
 	public List<Comments> findAll() ;
 	
-	public Comments findBySubmissionId(String submissionId);
+	public Comments findByCommentId(String commentId);
 	/*
 	 * @Override
-	public default java.util.Optional<Comments> findById(String submissionId) {
+	public default java.util.Optional<Comments> findById(String commentId) {
 		return null;
 	}
 	 */

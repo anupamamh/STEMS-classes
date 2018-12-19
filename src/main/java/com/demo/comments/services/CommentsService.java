@@ -38,8 +38,8 @@ public class CommentsService {
 	}
 
 		
-	public void deleteComment(String submissionId) {
+	public void deleteComment(String commentId) {
 		//commentsRepository.delete(commentId);
-		commentsRepository.deleteById(submissionId);
+		commentsRepository.deleteById(commentId);
 	}
 }

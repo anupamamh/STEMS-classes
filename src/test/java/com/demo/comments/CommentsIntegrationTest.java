@@ -25,7 +25,7 @@ public class CommentsIntegrationTest {
 		ResponseEntity<Comments> response= restTemplate.getForEntity("/comments/", Comments.class);
 		
 	assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-	assertThat(response.getBody().getPersonName()).isEqualTo("Reliable Soft");
+	assertThat(response.getBody().getCommentBy()).isEqualTo("Reliable Soft");
 	assertThat(response.getBody().getCommentText()).isEqualTo("comments text");
 	assertThat(response.getBody().getEmailId()).isEqualTo("reliablesoft@gmail.com");
 	assertThat(response.getBody().isLike()).isEqualTo(true);
