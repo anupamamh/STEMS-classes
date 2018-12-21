@@ -18,7 +18,7 @@ public class CommentsService {
 
 	@Autowired
 	private CommentsRepository commentsRepository;
-	Comments tempComment;
+	//Comments tempComment;
 
 	public List<Comments> viewAllComments() {
 		//List<Comments> tempComments =  commentsRepository.findAll().;

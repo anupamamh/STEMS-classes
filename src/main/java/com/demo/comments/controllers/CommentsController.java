@@ -5,11 +5,13 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.comments.models.Comments;
@@ -39,7 +41,9 @@ public class CommentsController {
 
 	// To add a new comment
 	@RequestMapping(method = RequestMethod.POST)
+	@ResponseStatus(code=HttpStatus.CREATED)
 	public Comments addComment(@Valid @RequestBody Comments comments) {
+		System.out.println("A request is made");
 		commentsService.addComment(comments);
 		return comments;
 	}

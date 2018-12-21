@@ -1,34 +1,26 @@
 package com.demo.comments.controllers;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.any;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
+import java.net.URI;
 import java.util.Arrays;
-import java.util.List;
 
-import javax.validation.Valid;
-
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -36,30 +28,29 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.client.RestTemplate;
 
 import com.demo.comments.models.Comments;
 import com.demo.comments.services.CommentsService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = CommentsController.class, secure = false)
 
 public class CommentsControllerTest {
-	@MockBean
-	private CommentsService commentsService;
 
 	@Autowired
 	private MockMvc mockMvc;
+	@MockBean
+	CommentsService commentsService;
+	RestTemplate restTemplate = new RestTemplate();
 
-	Comments addcomments = new Comments("","comment comment", "Anupama", System.currentTimeMillis(), true,
+	Comments addcomments = new Comments("commentId","comment comment", "Anupama", System.currentTimeMillis(), true,
 			false, "anupama@gmail.com");
 
-	String exampleCommentsJson = "[{\"commentId\":\"commentId\",\"commentText\":\"comment comment\",\"personName\":\"Anupama\",\"like\":true,\"dislike\":false,\"emailId\":\"anupama@gmail.com\"}]";
-	String exampleCommentsJsonSave = "[{\"commentId\":\"commentId\",\"commentText\":\"comment for Devaraj\",\"personName\":\"Devaraj\",\"like\":true,\"dislike\":false,\"emailId\":\"devaraj@gmail.com\"}]";
+	String exampleCommentsJson = "[{\"commentId\":\"commentId\",\"commentText\":\"comment comment\",\"commentBy\":\"Anupama\",\"like\":true,\"dislike\":false,\"emailId\":\"anupama@gmail.com\"}]";
+	String exampleCommentsJsonSave = "{\"commentId\":\"commentId\",\"commentText\":\"comment for Devaraj\",\"commentBy\":\"Devaraj\",\"like\":true,\"dislike\":false,\"emailId\":\"devaraj@gmail.com\"}";
 
 	@Test
-	@Ignore
 	public void getComments_shouldReturnCommentsTest() throws Exception {
 
 		Mockito.when(commentsService.viewAllComments()).thenReturn(Arrays.asList(addcomments));
@@ -77,8 +68,8 @@ public class CommentsControllerTest {
 		  .andExpect(jsonPath("$[0].emailId", is("anupama@gmail.com")));
 		 */
 	}
+
 	@Test
-	@Ignore
 	public void toSaveComments_shouldSaveTest()throws Exception ,HttpMessageNotReadableException{
 		
 		Comments comment= new Comments();
@@ -89,31 +80,54 @@ public class CommentsControllerTest {
 		comment.setEmailId("devaraj@gmail.com");
 		
 		RequestBuilder requestBuilder = MockMvcRequestBuilders
-				.post("/comments/")
+				.post("/comments")
 				.accept(MediaType.APPLICATION_JSON).content(exampleCommentsJsonSave)
 				.contentType(MediaType.APPLICATION_JSON);
 		
 		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 		MockHttpServletResponse response = result.getResponse();
-		System.out.println("===========>>"+result.getResponse());
 		assertEquals(HttpStatus.CREATED.value(), response.getStatus());
 
-		assertEquals("http://localhost:8080/comments",
-				response.getHeader(HttpHeaders.LOCATION));
+	//	assertEquals("http://localhost:8080/comments",response.getHeader(HttpHeaders.LOCATION));
 	}
-	@Test
-	@Ignore
-	public void toSaveComments_webLayerTest()throws Exception{
-		
-		 mockMvc.perform(post("/comments").accept(MediaType.APPLICATION_JSON))
-		 .andDo(print()).andExpect(status().isOk());
-		
+	/*@Test
+	public void toSaveComments_webLayerTest() throws Exception {
 
-	}
+		mockMvc.perform(post("/comments").accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
+	}*/
+
 	@Test
-	
-	public void togetComments_webLayerTest()throws Exception{
-		 mockMvc.perform(get("/comments").accept(MediaType.APPLICATION_JSON))
-		 .andDo(print()).andExpect(status().isOk());
+	public void togetComments_webLayerTest() throws Exception {
+		mockMvc.perform(get("/comments").accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
 	}
+
+	@Ignore
+	@Test
+	public void addCommentSuccess_Test() throws Exception {
+
+		final String baseUrl = "http://localhost:8080" + "/comments";
+		URI uri = new URI(baseUrl);
+		ResponseEntity<String> result = restTemplate.postForEntity(uri, addcomments, String.class);
+		Assert.assertEquals(200, result.getStatusCodeValue());
+	}
+
+	 @Ignore
+		@Test
+		public void deleteCommentTest() throws Exception
+		{
+			mockMvc.perform(MockMvcRequestBuilders.delete("/comments/{id}","5c17da6a2f9e4809787311ba") )
+		        .andExpect(status().isAccepted());
+		}
+	/*
+	 *  @Ignore
+	@Test
+	public void deleteComment_Test() throws Exception {
+		  
+		 final String uri = "http://localhost:8080/comments/{id}";
+		    Map<String, String> params = new HashMap<String, String>();
+		    params.put("id", "5c17da6a2f9e4809787311ba");
+		    restTemplate.delete(uri,params);
+		
+	}
+	 */
 }
